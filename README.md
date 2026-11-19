@@ -8,6 +8,9 @@ WordPress plugin that keeps WooCommerce products in sync with a live Google Shee
 
 Used on b2b.jlautier.shop, jlautier.shop and toptechnix.com.
 
+## Updates
+From 1.7.0 the plugin updates itself from this repo: new versions on `main` show up as "Update available" in wp-admin. See RELEASING.md.
+
 ## Requirements
 WordPress 5.8+, WooCommerce, PHP 8.0+.
 

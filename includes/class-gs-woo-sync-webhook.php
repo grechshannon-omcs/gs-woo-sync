@@ -24,6 +24,10 @@ class GS_Woo_Sync_Webhook {
         $provided = $request->get_param( 'token' )
             ?? $request->get_header( 'X-GS-Token' )
             ?? '';
+        // A token sent as an array (?token[]=) would make hash_equals() throw; treat it as wrong.
+        if ( ! is_string( $provided ) ) {
+            return false;
+        }
         return $token && hash_equals( $token, $provided );
     }
 

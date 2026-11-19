@@ -3,8 +3,9 @@
  * Plugin Name: GS – Woo Sync
  * Plugin URI:  https://jlautier.shop
  * Description: Sync WooCommerce products from a live Google Sheet (CSV).
- * Version:     1.6.0
+ * Version:     1.7.0
  * Author:      GS
+ * Update URI:  https://github.com/grechshannon-omcs/gs-woo-sync
  * Text Domain: gs-woo-sync
  * Requires at least: 5.8
  * Requires PHP: 8.0
@@ -12,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'GS_WOO_SYNC_VERSION', '1.6.0' );
+define( 'GS_WOO_SYNC_VERSION', '1.7.0' );
 define( 'GS_WOO_SYNC_FILE',    __FILE__ );
 define( 'GS_WOO_SYNC_DIR',     plugin_dir_path( __FILE__ ) );
 define( 'GS_WOO_SYNC_URL',     plugin_dir_url( __FILE__ ) );
@@ -27,12 +28,16 @@ foreach ( [
     'class-gs-woo-sync-notifier.php',
     'class-gs-woo-sync-webhook.php',
     'class-gs-woo-sync-admin.php',
+    'class-gs-woo-sync-updater.php',
 ] as $file ) {
     require_once GS_WOO_SYNC_DIR . 'includes/' . $file;
 }
 
 /* ── Bootstrap ─────────────────────────────────────────────── */
 function gs_woo_sync_init(): void {
+    // Updates from GitHub work even if WooCommerce is inactive.
+    GS_Woo_Sync_Updater::init();
+
     if ( ! class_exists( 'WooCommerce' ) ) {
         add_action( 'admin_notices', static function () {
             echo '<div class="notice notice-error"><p><strong>GS – Woo Sync</strong> requires WooCommerce to be active.</p></div>';
