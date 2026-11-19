@@ -436,9 +436,13 @@ class GS_Woo_Sync_Importer {
         /* Save product */
         $product->save();
 
-        /* ── Image ── */
+        /* ── Images: first URL = main image, any further URLs = gallery ── */
         if ( $v = $this->get_field( $row, 'images' ) ) {
-            $this->maybe_sideload_image( $product_id, $v );
+            $urls = self::split_image_urls( $v );
+            if ( $urls ) {
+                $this->maybe_sideload_image( $product_id, $urls[0] );
+                $this->maybe_sync_gallery( $product_id, array_slice( $urls, 1 ) );
+            }
         }
 
         /* ── Meta map ── */
@@ -799,6 +803,76 @@ class GS_Woo_Sync_Importer {
     }
 
     /* ── Image sideload ────────────────────────────────────── */
+
+    /**
+     * Split an Images cell into URLs. Several images are separated by commas
+     * ("main.jpg, side.jpg, back.jpg"); a split only happens before "http", so a
+     * comma inside a single URL is left alone.
+     */
+    public static function split_image_urls( string $raw ): array {
+        $parts = preg_split( '/\s*,\s*(?=https?:\/\/)/i', trim( $raw ) );
+        return array_values( array_filter( array_map( 'trim', (array) $parts ) ) );
+    }
+
+    /**
+     * Gallery images (2nd, 3rd … URL in the Images cell).
+     * Only re-downloads when the list of URLs changes. Images already downloaded
+     * for this product are reused (URL → attachment ID kept in post meta).
+     * A cell with a single URL leaves a gallery alone unless this plugin set it.
+     */
+    private function maybe_sync_gallery( int $product_id, array $urls ): void {
+        $signature = implode( '|', $urls );
+        $previous  = (string) get_post_meta( $product_id, '_gs_woo_sync_gallery_urls', true );
+
+        if ( $signature === $previous ) return;          // unchanged
+        if ( ! $urls && $previous === '' ) return;        // single-image sheet, gallery not ours
+
+        require_once ABSPATH . 'wp-admin/includes/image.php';
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        require_once ABSPATH . 'wp-admin/includes/media.php';
+
+        $known = get_post_meta( $product_id, '_gs_woo_sync_gallery_map', true );
+        $known = is_array( $known ) ? $known : [];
+        $ids   = [];
+        $map   = [];
+
+        foreach ( $urls as $url ) {
+            $existing_id = (int) ( $known[ $url ] ?? 0 );
+            if ( $existing_id && get_post( $existing_id ) ) {
+                $ids[]       = $existing_id;
+                $map[ $url ] = $existing_id;
+                continue;
+            }
+            $tmp = download_url( $url );
+            if ( is_wp_error( $tmp ) ) {
+                $this->results['notes'][] = "Gallery image download failed for product {$product_id}: " . $tmp->get_error_message();
+                continue;
+            }
+            $file_array = [
+                'name'     => basename( parse_url( $url, PHP_URL_PATH ) ) ?: 'product-image.jpg',
+                'tmp_name' => $tmp,
+            ];
+            $attachment_id = media_handle_sideload( $file_array, $product_id );
+            if ( is_wp_error( $attachment_id ) ) {
+                @unlink( $tmp );
+                $this->results['notes'][] = "Gallery image sideload failed for product {$product_id}: " . $attachment_id->get_error_message();
+                continue;
+            }
+            $ids[]       = (int) $attachment_id;
+            $map[ $url ] = (int) $attachment_id;
+        }
+
+        $product = wc_get_product( $product_id );
+        if ( $product ) {
+            $product->set_gallery_image_ids( $ids );
+            $product->save();
+        }
+        update_post_meta( $product_id, '_gs_woo_sync_gallery_map', $map );
+        // Only remember the list once every image arrived, so failures are retried next sync.
+        if ( count( $ids ) === count( $urls ) ) {
+            update_post_meta( $product_id, '_gs_woo_sync_gallery_urls', $signature );
+        }
+    }
 
     private function maybe_sideload_image( int $product_id, string $url ): void {
         if ( ! $url ) return;
