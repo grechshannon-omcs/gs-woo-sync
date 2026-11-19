@@ -1,0 +1,248 @@
+/* GS – Woo Sync Admin Styles */
+
+.gs-woo-sync-wrap h1 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.gs-version {
+    font-size: 13px;
+    font-weight: 400;
+    color: #888;
+    background: #f0f0f1;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+/* ── Tab content ── */
+.gs-tab-content {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-top: none;
+    padding: 20px 24px;
+}
+
+/* ── Result box ── */
+.gs-result-box {
+    background: #f6f7f7;
+    border-left: 4px solid #2271b1;
+    padding: 12px 16px;
+    border-radius: 0 4px 4px 0;
+    font-size: 13px;
+    line-height: 1.6;
+}
+.gs-result-box.gs-success { border-color: #00a32a; background: #f0fff4; }
+.gs-result-box.gs-error   { border-color: #d63638; background: #fff0f0; }
+
+/* ── Mapping table ── */
+.gs-mapping-table {
+    margin-top: 16px;
+}
+.gs-mapping-table th {
+    font-weight: 600;
+    background: #f6f7f7;
+}
+.gs-mapping-table td {
+    vertical-align: middle;
+    padding: 8px 10px;
+}
+.gs-mapping-table select {
+    width: 200px;
+    max-width: 100%;
+}
+.gs-meta-custom {
+    margin-top: 4px;
+    width: 180px;
+    font-size: 12px;
+}
+.gs-remove-row {
+    color: #d63638 !important;
+    font-size: 16px !important;
+    padding: 0 4px !important;
+}
+.gs-mapping-header {
+    margin-bottom: 12px;
+}
+.gs-notice {
+    background: #fff8e5;
+    border-left: 4px solid #f0b849;
+    padding: 8px 12px;
+}
+
+/* ── Log table ── */
+.gs-log-table th { background: #f6f7f7; }
+.gs-log-table td { font-size: 13px; }
+.gs-log-header { margin-bottom: 12px; }
+.gs-num {
+    text-align: center;
+    font-weight: 600;
+}
+.gs-num.green  { color: #00a32a; }
+.gs-num.blue   { color: #2271b1; }
+.gs-num.orange { color: #d67108; }
+.gs-num.red    { color: #d63638; }
+.gs-notes {
+    font-size: 11px;
+    color: #666;
+    max-width: 280px;
+    word-break: break-word;
+}
+
+/* ── Badge ── */
+.gs-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    background: #e0e0e0;
+    color: #444;
+}
+.gs-badge-manual { background: #dceeff; color: #2271b1; }
+.gs-badge-cron   { background: #e8f5e9; color: #1a7e37; }
+
+/* ── Help tab ── */
+.gs-help h2 {
+    font-size: 16px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 6px;
+    margin-top: 24px;
+}
+.gs-help ul, .gs-help ol {
+    margin-left: 20px;
+}
+.gs-help code {
+    background: #f6f7f7;
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+
+/* ── Spinner ── */
+.gs-spinning {
+    display: inline-block;
+    animation: gs-spin 0.8s linear infinite;
+}
+@keyframes gs-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* ── Auto-mapping row states ── */
+.gs-row-mapped   { background: #f0fff4; }
+.gs-row-skipped  { background: #f9f9f9; opacity: 0.7; }
+.gs-row-unmapped { background: #fffbf0; }
+
+/* ── Auto-mapping badges ── */
+.gs-badge-auto-core { background: #dceeff; color: #2271b1; }
+.gs-badge-auto-meta { background: #f0e6ff; color: #6a31a5; }
+.gs-badge-skip      { background: #f0f0f1; color: #888; }
+.gs-badge-none      { background: #fff3cd; color: #856404; }
+
+/* ── Auto-mapping status line ── */
+.gs-auto-ok   { color: #00a32a; font-weight: 600; }
+.gs-auto-skip { color: #888; }
+.gs-auto-warn { color: #d67108; font-weight: 600; }
+
+/* ── Auto-badge column ── */
+.gs-auto-badge { text-align: center; width: 80px; }
+
+/* ── Diagnostics tab ── */
+.gs-diagnostics h2 { margin-bottom: 12px; }
+.gs-diag-table td  { padding: 7px 10px; font-size: 13px; vertical-align: top; }
+.gs-diag-label     { font-weight: 600; width: 240px; color: #444; }
+.gs-diag-ok        { color: #00a32a; font-weight: 600; }
+.gs-diag-fail      { color: #d63638; font-weight: 600; }
+.gs-diag-info      { color: #444; }
+.gs-diag-error     { color: #d63638; font-weight: 600; padding: 10px; background: #fff0f0; border-left: 4px solid #d63638; }
+
+/* ── Sync Recap ── */
+.gs-recap-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+.gs-recap-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    background: #f0f0f1;
+    color: #444;
+}
+.gs-recap-created { background: #e8f5e9; color: #1a7e37; }
+.gs-recap-updated { background: #dceeff; color: #2271b1; }
+.gs-recap-skipped { background: #f0f0f1; color: #666;    }
+.gs-recap-trashed { background: #fff3e0; color: #c25a00; }
+.gs-recap-errors  { background: #fce8e8; color: #d63638; }
+
+.gs-recap-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 4px;
+}
+.gs-recap-section {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.gs-recap-section h4 {
+    margin: 0;
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    background: #f6f7f7;
+    border-bottom: 1px solid #e0e0e0;
+}
+.gs-recap-section-created h4 { background: #e8f5e9; color: #1a7e37; border-color: #c8e6c9; }
+.gs-recap-section-updated h4 { background: #dceeff; color: #2271b1; border-color: #b3d4f5; }
+.gs-recap-section-trashed h4 { background: #fff3e0; color: #c25a00; border-color: #ffe0b2; }
+.gs-recap-section-errors  h4 { background: #fce8e8; color: #d63638; border-color: #f5c6c6; }
+
+.gs-recap-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+.gs-recap-table th {
+    background: #fafafa;
+    padding: 5px 10px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+    font-weight: 600;
+}
+.gs-recap-table td {
+    padding: 5px 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+.gs-recap-table tr:last-child td { border-bottom: none; }
+.gs-recap-table code { font-size: 11px; background: #f0f0f1; padding: 1px 4px; border-radius: 3px; }
+
+.gs-recap-empty { color: #888; font-size: 13px; margin: 4px 0; font-style: italic; }
+.gs-recap-notes { font-size: 12px; color: #666; margin-top: 10px; border-top: 1px solid #e0e0e0; padding-top: 8px; }
+
+/* ── Rollback button ── */
+.gs-rollback-btn {
+    font-size: 11px !important;
+    padding: 2px 8px !important;
+    height: auto !important;
+    color: #c25a00 !important;
+    border-color: #c25a00 !important;
+}
+.gs-rollback-btn:hover {
+    background: #fff3e0 !important;
+}
+
+/* ── Webhook URL box ── */
+#gs-webhook-url { font-size: 12px; font-family: monospace; }
+#gs-apps-script { resize: vertical; }
+
+/* ── Attribute mapping table ── */
+.gs-attr-table th, .gs-attr-table td { padding: 7px 10px; vertical-align: middle; }
+.gs-attr-row-auto { background: #f0f7ff; }
+.gs-attr-row-auto td:first-child::after { content: ' (auto)'; font-size: 10px; color: #2271b1; }
