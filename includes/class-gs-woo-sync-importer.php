@@ -275,21 +275,33 @@ class GS_Woo_Sync_Importer {
     private function parse_csv( string $body ): array {
         // Remove BOM
         $body = ltrim( $body, "\xEF\xBB\xBF" );
+        if ( '' === trim( $body ) ) return [];
 
-        $lines = array_filter( explode( "\n", str_replace( "\r\n", "\n", $body ) ) );
-        if ( count( $lines ) < 2 ) return [];
+        // Read as a real CSV stream so quoted cells may contain line breaks
+        // (e.g. descriptions written with paragraphs).
+        $fh = fopen( 'php://temp', 'r+' );
+        fwrite( $fh, $body );
+        rewind( $fh );
 
-        $lines   = array_values( $lines );
-        $headers = str_getcsv( array_shift( $lines ) );
+        $headers = fgetcsv( $fh, 0, ',', '"', '' );
+        if ( ! $headers ) {
+            fclose( $fh );
+            return [];
+        }
         $headers = array_map( 'trim', $headers );
 
         $rows = [];
-        foreach ( $lines as $line ) {
-            $values = str_getcsv( $line );
+        while ( ( $values = fgetcsv( $fh, 0, ',', '"', '' ) ) !== false ) {
+            if ( [ null ] === $values ) continue; // blank line
+            // Rows that end early (trailing empty cells left out) are padded with blanks.
+            if ( count( $values ) < count( $headers ) ) {
+                $values = array_pad( $values, count( $headers ), '' );
+            }
             if ( count( $values ) === count( $headers ) ) {
                 $rows[] = array_combine( $headers, array_map( 'trim', $values ) );
             }
         }
+        fclose( $fh );
 
         return $rows;
     }
@@ -300,6 +312,20 @@ class GS_Woo_Sync_Importer {
         $sku = $this->get_field( $row, 'sku' );
         if ( ! $sku ) {
             $this->results['skipped']++;
+            return;
+        }
+
+        /**
+         * Let other plugins hold back a row, e.g. while a change made on the website
+         * has not reached the sheet yet (so the sync does not undo it).
+         *
+         * @param bool   $skip Skip this row.
+         * @param string $sku  Row SKU.
+         * @param array  $row  Row values keyed by sheet header.
+         */
+        if ( apply_filters( 'gs_woo_sync_skip_row', false, $sku, $row ) ) {
+            $this->results['skipped']++;
+            $this->results['notes'][] = "Held back {$sku}: a website change is waiting to be written to the sheet.";
             return;
         }
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.0 — 20 Nov 2026
+- The sheet is read as a proper CSV stream: cells may now contain line breaks (multi-paragraph descriptions no longer break the row).
+- New filter `gs_woo_sync_skip_row( $skip, $sku, $row )` so another plugin can hold back a row (used by OMC Client Panel while a website change is waiting to be written to the sheet).
+
 ## 1.8.0 — 19 Nov 2026
 - Images column can hold several URLs separated by commas: the first is the main image, the rest become the product gallery. Gallery images are only downloaded when the list changes, and images already downloaded are reused. Sheets with one URL per product work as before.
 

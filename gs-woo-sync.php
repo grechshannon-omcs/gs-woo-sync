@@ -3,7 +3,7 @@
  * Plugin Name: GS – Woo Sync
  * Plugin URI:  https://jlautier.shop
  * Description: Sync WooCommerce products from a live Google Sheet (CSV).
- * Version:     1.8.0
+ * Version:     1.9.0
  * Author:      GS
  * Update URI:  https://github.com/grechshannon-omcs/gs-woo-sync
  * Text Domain: gs-woo-sync
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'GS_WOO_SYNC_VERSION', '1.8.0' );
+define( 'GS_WOO_SYNC_VERSION', '1.9.0' );
 define( 'GS_WOO_SYNC_FILE',    __FILE__ );
 define( 'GS_WOO_SYNC_DIR',     plugin_dir_path( __FILE__ ) );
 define( 'GS_WOO_SYNC_URL',     plugin_dir_url( __FILE__ ) );
