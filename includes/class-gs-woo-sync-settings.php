@@ -42,6 +42,8 @@ class GS_Woo_Sync_Settings {
             'sku'               => 'SKU',
             'regular_price'     => 'Regular Price',
             'sale_price'        => 'Sale Price',
+            'sale_from'         => 'Sale Start Date',
+            'sale_to'           => 'Sale End Date',
             'stock_quantity'    => 'Stock Quantity',
             'stock_status'      => 'Stock Status (instock/outofstock)',
             'description'       => 'Description',
@@ -107,6 +109,15 @@ class GS_Woo_Sync_Settings {
             'promo price'             => 'sale_price',
             'discount price'          => 'sale_price',
             'special price'           => 'sale_price',
+            // Sale dates
+            'date sale price starts'  => 'sale_from',
+            'sale start'              => 'sale_from',
+            'sale start date'         => 'sale_from',
+            'sale from'               => 'sale_from',
+            'date sale price ends'    => 'sale_to',
+            'sale end'                => 'sale_to',
+            'sale end date'           => 'sale_to',
+            'sale to'                 => 'sale_to',
             // Stock quantity
             'stock'                   => 'stock_quantity',
             'stock quantity'          => 'stock_quantity',
@@ -195,7 +206,6 @@ class GS_Woo_Sync_Settings {
     public static function skip_list(): array {
         return [
             'id', 'is featured?', 'visibility in catalog',
-            'date sale price starts', 'date sale price ends',
             'tax status', 'tax class', 'low stock amount',
             'backorders allowed?', 'sold individually?',
             'allow customer reviews?', 'purchase note',

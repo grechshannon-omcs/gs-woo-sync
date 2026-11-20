@@ -377,7 +377,25 @@ class GS_Woo_Sync_Importer {
             }
         }
         if ( $v = $this->get_field( $row, 'regular_price' ) )     $product->set_regular_price( $v );
-        if ( '' !== ( $v = $this->get_field( $row, 'sale_price' ) ) ) $product->set_sale_price( $v );
+        // Sale price + optional sale dates. When the sheet has sale date columns it manages sales
+        // completely, so an empty sale price there ends the sale; otherwise an empty cell is left alone.
+        $sheet_runs_sales = apply_filters( 'gs_woo_sync_sheet_runs_sales', $this->is_mapped( 'sale_from' ) || $this->is_mapped( 'sale_to' ) );
+        $sale_raw         = $this->get_field( $row, 'sale_price' );
+        if ( '' !== $sale_raw ) {
+            $product->set_sale_price( $sale_raw );
+        } elseif ( $sheet_runs_sales && $this->is_mapped( 'sale_price' ) ) {
+            $product->set_sale_price( '' );
+        }
+        foreach ( [ 'sale_from' => false, 'sale_to' => true ] as $date_field => $end_of_day ) {
+            if ( ! $this->is_mapped( $date_field ) ) continue;
+            $raw  = $this->get_field( $row, $date_field );
+            $date = $this->parse_sale_date( $raw, $end_of_day );
+            if ( '' !== $raw && null === $date ) {
+                $this->results['notes'][] = "SKU {$sku}: sale date \"{$raw}\" not understood (use 2026-12-24 or 24/12/2026) — left empty.";
+            }
+            if ( 'sale_from' === $date_field ) $product->set_date_on_sale_from( $date );
+            else $product->set_date_on_sale_to( $date );
+        }
         if ( $v = $this->get_field( $row, 'description' ) )       $product->set_description( $v );
         if ( $v = $this->get_field( $row, 'short_description' ) ) $product->set_short_description( $v );
         if ( $v = $this->get_field( $row, 'weight' ) )            $product->set_weight( $v );
@@ -525,6 +543,29 @@ class GS_Woo_Sync_Importer {
             }
         }
         return false;
+    }
+
+    /* ── Helper: is a WC field mapped to a sheet column? ───── */
+
+    private function is_mapped( string $wc_field ): bool {
+        return false !== array_search( $wc_field, $this->column_map, true );
+    }
+
+    /**
+     * Sheet date → "Y-m-d H:i:s" in the site's time zone (start or end of that day), or null.
+     * Accepts 2026-12-24, 24/12/2026, 24.12.2026, 24-12-2026 (day first, as written in Malta).
+     */
+    private function parse_sale_date( string $raw, bool $end_of_day ): ?string {
+        $raw = trim( $raw );
+        if ( '' === $raw ) return null;
+        $y = $m = $d = 0;
+        if ( preg_match( '/^(\d{4})-(\d{1,2})-(\d{1,2})/', $raw, $x ) ) {
+            [ , $y, $m, $d ] = $x;
+        } elseif ( preg_match( '#^(\d{1,2})[/.\-](\d{1,2})[/.\-](\d{4})#', $raw, $x ) ) {
+            [ , $d, $m, $y ] = $x;
+        }
+        if ( ! $y || ! checkdate( (int) $m, (int) $d, (int) $y ) ) return null;
+        return sprintf( '%04d-%02d-%02d %s', $y, $m, $d, $end_of_day ? '23:59:59' : '00:00:00' );
     }
 
     /* ── Helper: get mapped field value from row ───────────── */
